@@ -140,8 +140,8 @@ export class ContactEdit implements OnInit {
 
   onRemoveItem(index: number) {
     if (index < 0 || index >= this.groupContacts.length) {
-      return; // Index is out of range, exit method
+      return;
     }
-    this.groupContacts.splice(index, 1); // Remove the contact at the specified index from the groupContacts array
+    this.groupContacts.splice(index, 1);
   }
 }
