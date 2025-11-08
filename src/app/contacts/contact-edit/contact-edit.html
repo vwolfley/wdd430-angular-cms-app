@@ -1,1 +1,128 @@
-<p>contact-edit works!</p>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <form id="contact-edit" (ngSubmit)="onSubmit(f)" #f="ngForm">
+      <div class="row">
+        <div class="col-sm-12 form-group">
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            class="form-control required"
+            [ngClass]="{ 'is-invalid': name.invalid && name.touched }"
+            size="120"
+            max="120"
+            required
+            [(ngModel)]="contact!.name"
+            name="name"
+            #name="ngModel"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 form-group">
+          <label for="email">Email:</label>
+          <input
+            type="text"
+            id="email"
+            class="form-control required"
+            [ngClass]="{ 'is-invalid': email.invalid && email.touched }"
+            size="120"
+            max="255"
+            required
+            [(ngModel)]="contact!.email"
+            name="email"
+            #email="ngModel"
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
+          />
+        </div>
+        <div class="alert alert-danger" *ngIf="email.invalid && email.touched">
+          Enter a valid Email address.
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 form-group">
+          <label for="phone">Phone:</label>
+          <input
+            type="tel"
+            id="phone"
+            class="form-control invalid"
+            size="150"
+            max="255"
+            [(ngModel)]="contact!.phone"
+            name="phone"
+            #phone="ngModel"
+            pattern="\D*([2-9]\d{2})(\D*)([2-9]\d{2})(\D*)(\d{4})\D*"
+          />
+        </div>
+        <div class="alert alert-danger" *ngIf="phone.invalid && phone.touched">
+          Enter a valid Phone.
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 form-group">
+          <label for="imageUrl">Image URL:</label>
+          <input
+            type="text"
+            id="imageUrl"
+            class="form-control"
+            size="150"
+            max="255"
+            [(ngModel)]="contact!.imageUrl"
+            name="imageUrl"
+            #imageUrl="ngModel"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="groupList">Group Contacts:</label>
+
+          <div
+            class="group-list-container"
+            id="groupList"
+            cdkDropList
+            [cdkDropListData]="groupContacts"
+            [cdkDropListConnectedTo]="['availableContactsList']"
+            [cdkDropListEnterPredicate]="canEnterGroup"
+            (cdkDropListDropped)="onGroupDrop($event)"
+            style="min-height: 3rem"
+          >
+            <div
+              *ngFor="let contact of groupContacts; let i = index"
+              class="d-flex align-items-center mb-2"
+              cdkDrag
+            >
+              <cms-contact-item class="col-sm-11" [contact]="contact"></cms-contact-item>
+
+              <button class="btn btn-danger col-sm-2 deleteButton" type="button" (click)="onRemoveItem(i)">
+                X
+              </button>
+            </div>
+
+            <span class="dragMsg" *ngIf="!groupContacts || groupContacts.length < 1">
+              Drag contacts in group here
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="alert alert-danger mt-3"
+        *ngIf="(!name.valid && !name.touched) || (!email.valid && !email.touched)"
+      >
+        The Name and Email fields are required.
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 btn-toolbar">
+          <button class="btn btn-success" type="submit" [disabled]="f.invalid">Save</button>
+          <button class="btn btn-primary" type="button" (click)="onCancel()">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

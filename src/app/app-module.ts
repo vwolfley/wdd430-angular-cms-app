@@ -4,6 +4,7 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 
 import { App } from './app';
 import { Header } from './header/header';
@@ -26,6 +27,7 @@ import { MessageList } from './messages/message-list/message-list';
 
 import { DropdownDirective } from './shared/dropdown.directive';
 import { AppRoutingModule } from './app-routing.module';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -46,7 +48,7 @@ import { AppRoutingModule } from './app-routing.module';
     DocumentEdit,
     ContactEdit,
   ],
-  imports: [BrowserModule, AppRoutingModule],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, DragDropModule],
   providers: [provideBrowserGlobalErrorListeners(), provideZonelessChangeDetection()],
   bootstrap: [App],
 })
