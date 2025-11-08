@@ -7,10 +7,20 @@
   </div>
 
   <div class="panel-body">
-    <div class="col-xs-12">
+    <div
+      class="col-xs-12"
+      id="availableList"
+      cdkDropList
+      [cdkDropListData]="contacts"
+      [cdkDropListConnectedTo]="['groupList']"
+      (cdkDropListDropped)="onDrop($event)"
+    >
       @for (contactEl of contacts; track contactEl.id) {
-      <cms-contact-item [contact]="contactEl"> </cms-contact-item>
+        <div class="contact-draggable" cdkDrag [cdkDragData]="contactEl">
+          <cms-contact-item [contact]="contactEl"></cms-contact-item>
+        </div>
       }
     </div>
   </div>
 </div>
+

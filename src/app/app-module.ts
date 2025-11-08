@@ -27,6 +27,7 @@ import { MessageList } from './messages/message-list/message-list';
 
 import { DropdownDirective } from './shared/dropdown.directive';
 import { AppRoutingModule } from './app-routing.module';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,7 @@ import { AppRoutingModule } from './app-routing.module';
     DocumentEdit,
     ContactEdit,
   ],
-  imports: [BrowserModule, AppRoutingModule, FormsModule],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, DragDropModule],
   providers: [provideBrowserGlobalErrorListeners(), provideZonelessChangeDetection()],
   bootstrap: [App],
 })

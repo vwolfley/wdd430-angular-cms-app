@@ -81,21 +81,35 @@
         <div class="form-group">
           <label for="groupList">Group Contacts:</label>
 
-          <div class="row" id="groupList" style="min-height: 3rem">
-            <!-- <div *ngFor="let contact of groupContacts; let i = index"> -->
-            <div>
-              <div>
-                <!-- <cms-contact-item class="col-sm-11" [contact]="contact"></cms-contact-item> -->
-                <cms-contact-item class="col-sm-11"></cms-contact-item>
-                <!-- <button class="btn btn-danger col-sm-2 deleteButton" (click)="onRemoveItem(i)">X</button> -->
-                <button class="btn btn-danger col-sm-2 deleteButton">X</button>
-              </div>
+          <div
+            class="group-list-container"
+            id="groupList"
+            cdkDropList
+            [cdkDropListData]="groupContacts"
+            [cdkDropListConnectedTo]="['availableContactsList']"
+            [cdkDropListEnterPredicate]="canEnterGroup"
+            (cdkDropListDropped)="onGroupDrop($event)"
+            style="min-height: 3rem"
+          >
+            <div
+              *ngFor="let contact of groupContacts; let i = index"
+              class="d-flex align-items-center mb-2"
+              cdkDrag
+            >
+              <cms-contact-item class="col-sm-11" [contact]="contact"></cms-contact-item>
+
+              <button class="btn btn-danger col-sm-2 deleteButton" (click)="onRemoveItem(i)">
+                X
+              </button>
             </div>
-            <!-- <span class="dragMsg" *ngIf="groupContacts?.length < 1">Drag contacts in group here</span> -->
-            <span class="dragMsg">Drag contacts in group here</span>
+
+            <span class="dragMsg" *ngIf="!groupContacts || groupContacts.length < 1">
+              Drag contacts in group here
+            </span>
           </div>
         </div>
       </div>
+
       <div
         class="alert alert-danger mt-3"
         *ngIf="(!name.valid && !name.touched) || (!email.valid && !email.touched)"
