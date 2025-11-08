@@ -12,9 +12,10 @@ import { DocumentsService } from '../documents.service';
   styleUrl: './document-edit.css',
 })
 export class DocumentEdit implements OnInit {
-  @ViewChild('f') documentForm: NgForm;
-  originalDocument: Document;
-  document: Document;
+  @ViewChild('f') documentForm!: NgForm;
+
+  originalDocument!: Document | null;
+  document: Document = new Document('', '', '', '', []);
   editMode: boolean = false;
 
   constructor(
@@ -45,22 +46,20 @@ export class DocumentEdit implements OnInit {
     });
   }
 
+  onCancel() {
+    this.router.navigate(['/documents']);
+  }
+
   onSubmit(form: NgForm) {
     // get values from the form
     const value = form.value;
 
     // create a new Document object using the form values
-    const newDocument = new Document(
-      value.id,
-      value.name,
-      value.description,
-      value.url,
-      value.children // optional, depends on your model
-    );
+    const newDocument = new Document(value.id, value.name, value.description, value.url);
 
     // check if we are in edit mode
     if (this.editMode === true) {
-      this.documentsService.updateDocument(this.originalDocument, newDocument);
+      this.documentsService.updateDocument(this.originalDocument!, newDocument);
     } else {
       this.documentsService.addDocument(newDocument);
     }
