@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
@@ -11,7 +11,7 @@ import { DocumentsService } from '../documents.service';
   templateUrl: './document-edit.html',
   styleUrl: './document-edit.css',
 })
-export class DocumentEdit implements OnInit {
+export class DocumentEdit implements OnInit{
   @ViewChild('f') documentForm!: NgForm;
 
   originalDocument!: Document | null;
