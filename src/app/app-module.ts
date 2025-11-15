@@ -29,7 +29,9 @@ import { MessageList } from './messages/message-list/message-list';
 import { DropdownDirective } from './shared/dropdown.directive';
 import { AppRoutingModule } from './app-routing.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { HttpClientModule } from '@angular/common/http';
+// import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
+
 
 
 @NgModule({
@@ -52,8 +54,8 @@ import { HttpClientModule } from '@angular/common/http';
     ContactEdit,
     ContactsFilterPipe,
   ],
-  imports: [BrowserModule, AppRoutingModule, FormsModule, DragDropModule, HttpClientModule],
-  providers: [provideBrowserGlobalErrorListeners(), provideZonelessChangeDetection()],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, DragDropModule],
+  providers: [provideBrowserGlobalErrorListeners(), provideZonelessChangeDetection(), provideHttpClient()],
   bootstrap: [App],
 })
 export class AppModule {}
