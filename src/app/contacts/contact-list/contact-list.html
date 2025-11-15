@@ -1,8 +1,32 @@
 <div class="panel panel-default">
-  <div class="panel-heading">
-    <div class="row pad-left-right">
-      <span class="panel-title pull-left">Contacts</span>
-      <a class="btn btn-success pull-right" routerLink="new">New Contact</a>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="row">
+            <span class="title pad-left-right">Contacts</span>
+          </div>
+          <div class="row">
+            <div class="input-group pull-left pad-left-right col-xs-7">
+              <input
+                #searchBox
+                type="text"
+                class="form-control"
+                placeholder="Enter a search value"
+                (keyup)="search(searchBox.value)"
+              />
+
+              <div
+                class="glyphicon glyphicon-search input-group-addon"
+                (click)="search(searchBox.value)"
+              ></div>
+            </div>
+            <div class="pull-right pad-left-right">
+              <a class="btn btn-success" [routerLink]="['new']">New Contact</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -15,12 +39,11 @@
       [cdkDropListConnectedTo]="['groupList']"
       (cdkDropListDropped)="onDrop($event)"
     >
-      @for (contactEl of contacts; track contactEl.id) {
-        <div class="contact-draggable" cdkDrag [cdkDragData]="contactEl">
-          <cms-contact-item [contact]="contactEl"></cms-contact-item>
-        </div>
+      @for (contactEl of (contacts | contactsFilter: term); track contactEl.id) {
+      <div class="contact-draggable" cdkDrag [cdkDragData]="contactEl">
+        <cms-contact-item [contact]="contactEl"></cms-contact-item>
+      </div>
       }
     </div>
   </div>
 </div>
-

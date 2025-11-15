@@ -14,12 +14,13 @@ import { ContactsService } from '../contacts.service';
 export class ContactList implements OnInit, OnDestroy {
   contacts: Contact[] = [];
   contactId: string = '';
+  term: string = '';
   private contactChangeSub!: Subscription;
 
   constructor(private contactsService: ContactsService) {}
 
   ngOnInit() {
-    this.contacts = this.contactsService.getContacts();
+    this.contactsService.getContacts();
 
     this.contactChangeSub = this.contactsService.contactListChangedEvent.subscribe(
       (contacts: Contact[]) => {
@@ -28,13 +29,16 @@ export class ContactList implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
-    this.contactChangeSub.unsubscribe();
-  }
-
   onDrop(event: CdkDragDrop<Contact[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(this.contacts, event.previousIndex, event.currentIndex);
     }
+  }
+  search(value: string) {
+    this.term = value;
+  }
+
+  ngOnDestroy() {
+    this.contactChangeSub.unsubscribe();
   }
 }
