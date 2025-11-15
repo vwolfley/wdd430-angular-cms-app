@@ -12,7 +12,7 @@ import { ContactsService } from '../../contacts/contacts.service';
 })
 export class MessageItem implements OnInit{
   @Input() message!: Message;
-  messageSender: string = 'Vern Wolfley';
+  messageSender: string = '';
 
   constructor(private contactsService: ContactsService) { }
 
