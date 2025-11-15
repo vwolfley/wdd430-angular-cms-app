@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Subject, Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { Document } from './document.model';
 // import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';

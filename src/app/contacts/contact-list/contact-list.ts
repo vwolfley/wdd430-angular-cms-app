@@ -20,7 +20,7 @@ export class ContactList implements OnInit, OnDestroy {
   constructor(private contactsService: ContactsService) {}
 
   ngOnInit() {
-    this.contacts = this.contactsService.getContacts();
+    this.contactsService.getContacts();
 
     this.contactChangeSub = this.contactsService.contactListChangedEvent.subscribe(
       (contacts: Contact[]) => {
