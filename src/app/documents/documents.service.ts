@@ -39,7 +39,7 @@ export class DocumentsService {
           if (a.name > b.name) return 1;
           return 0;
         });
-        return this.documentListChangedEvent.next(this.documents.slice());
+        this.documentListChangedEvent.next(this.documents.slice());
       },
       // ERROR method
       error: (error: any) => {
@@ -78,8 +78,9 @@ export class DocumentsService {
 
     this.documents.push(newDocument);
 
-    const documentsListClone = this.documents.slice();
-    this.documentListChangedEvent.next(documentsListClone);
+    // const documentsListClone = this.documents.slice();
+    // this.documentListChangedEvent.next(documentsListClone);
+    this.storeDocuments();
   }
 
   updateDocument(originalDocument: Document, newDocument: Document) {
@@ -95,8 +96,9 @@ export class DocumentsService {
     newDocument.id = originalDocument.id;
     this.documents[pos] = newDocument;
 
-    const documentsListClone = this.documents.slice();
-    this.documentListChangedEvent.next(documentsListClone);
+    // const documentsListClone = this.documents.slice();
+    // this.documentListChangedEvent.next(documentsListClone);
+    this.storeDocuments();
   }
 
   deleteDocument(document: Document) {
@@ -108,6 +110,17 @@ export class DocumentsService {
       return;
     }
     this.documents.splice(pos, 1);
-    this.documentListChangedEvent.next(this.documents.slice());
+    // this.documentListChangedEvent.next(this.documents.slice());
+    this.storeDocuments();
+  }
+
+  storeDocuments() {
+    const documentsJson = JSON.stringify(this.documents);
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // Send PUT request to Firebase to update the documents list
+    this.http.put(this.documentsUrl, documentsJson, { headers }).subscribe(() => {
+      this.documentListChangedEvent.next([...this.documents]);
+    });
   }
 }
