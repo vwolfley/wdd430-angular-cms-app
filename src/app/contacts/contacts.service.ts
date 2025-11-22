@@ -13,7 +13,7 @@ export class ContactsService {
   maxContactId: number = 0;
 
   constructor(private http: HttpClient) {
-    // this.contacts = MOCKCONTACTS;
+    // this.contacts.set(MOCKCONTACTS);
     this.maxContactId = this.getMaxId();
   }
 

@@ -17,7 +17,7 @@ export class DocumentsService {
     'https://wdd430-angular-cms-project-default-rtdb.firebaseio.com/documents.json';
 
   constructor(private http: HttpClient) {
-    // this.documents = MOCKDOCUMENTS;
+    // this.documents.set(MOCKDOCUMENTS);
     this.maxDocumentId = this.getMaxId();
   }
 
