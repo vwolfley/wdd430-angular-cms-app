@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Subject } from 'rxjs';
+import { Subject, tap, Observable } from 'rxjs';
 
 import { Document } from './document.model';
 // import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
@@ -19,7 +19,9 @@ export class DocumentsService {
 
   constructor(private http: HttpClient) {
     // this.documents = MOCKDOCUMENTS;
-    this.maxDocumentId = this.getMaxId();
+    // this.maxDocumentId = this.getMaxId();
+    this.documents = this.documents;
+    // this.getDocuments();
   }
 
   // getDocuments(): Document[] {
