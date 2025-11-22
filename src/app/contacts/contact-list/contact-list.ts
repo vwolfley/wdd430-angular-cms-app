@@ -14,7 +14,7 @@ export class ContactList implements OnInit {
   contactId: string = '';
   term: string = '';
 
-  constructor(public contactsService: ContactsService) {}
+  constructor(private contactsService: ContactsService) {}
 
   // Use computed to expose contacts as a signal
   contacts = computed(() => this.contactsService.contactListChangedEvent());
@@ -25,7 +25,10 @@ export class ContactList implements OnInit {
 
   onDrop(event: CdkDragDrop<Contact[]>) {
     if (event.previousContainer === event.container) {
-      moveItemInArray(this.contacts(), event.previousIndex, event.currentIndex);
+      const updatedContacts = [...this.contacts()];
+      moveItemInArray(updatedContacts, event.previousIndex, event.currentIndex);
+      // Note: Drag and drop reordering is a UI-only operation
+      // If persistence is needed, add a method in the service to update the order
     }
   }
   search(value: string) {

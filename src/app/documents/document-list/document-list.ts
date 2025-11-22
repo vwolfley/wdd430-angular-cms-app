@@ -12,7 +12,7 @@ import { DocumentsService } from '../documents.service';
 export class DocumentList implements OnInit {
   documentId: string = '';
 
-  constructor(public documentsService: DocumentsService) {}
+  constructor(private documentsService: DocumentsService) {}
 
   // Use computed to expose documents as a signal
   documents = computed(() => this.documentsService.documentListChangedEvent());
