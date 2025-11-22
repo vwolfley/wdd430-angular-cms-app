@@ -35,11 +35,11 @@
       class="col-xs-12"
       id="availableList"
       cdkDropList
-      [cdkDropListData]="contacts"
+      [cdkDropListData]="contacts()"
       [cdkDropListConnectedTo]="['groupList']"
       (cdkDropListDropped)="onDrop($event)"
     >
-      @for (contactEl of (contacts | contactsFilter: term); track contactEl.id) {
+      @for (contactEl of (contacts() | contactsFilter: term); track contactEl.id) {
       <div class="contact-draggable" cdkDrag [cdkDragData]="contactEl">
         <cms-contact-item [contact]="contactEl"></cms-contact-item>
       </div>

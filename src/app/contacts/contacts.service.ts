@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Subject } from 'rxjs';
 
 import { Contact } from './contact.model';
 // import { MOCKCONTACTS } from './MOCKCONTACTS';
@@ -9,8 +8,8 @@ import { Contact } from './contact.model';
   providedIn: 'root',
 })
 export class ContactsService {
-  private contacts: Contact[] = [];
-  contactListChangedEvent = new Subject<Contact[]>();
+  private contacts = signal<Contact[]>([]);
+  contactListChangedEvent = this.contacts.asReadonly();
   maxContactId: number = 0;
 
   constructor(private http: HttpClient) {
@@ -30,16 +29,15 @@ export class ContactsService {
     this.http.get<Contact[]>(this.contactsUrl).subscribe({
       // SUCCESS method
       next: (contacts: Contact[]) => {
-        this.contacts = contacts;
         this.maxContactId = this.getMaxId();
 
         // Sort by name
-        this.contacts.sort((a, b) => {
+        const sortedContacts = contacts.sort((a, b) => {
           if (a.name < b.name) return -1;
           if (a.name > b.name) return 1;
           return 0;
         });
-        this.contactListChangedEvent.next(this.contacts.slice());
+        this.contacts.set(sortedContacts);
       },
       // ERROR method
       error: (error: any) => {
@@ -52,12 +50,12 @@ export class ContactsService {
   }
 
   getContact(id: string): Contact | null {
-    return this.contacts.find((contact) => contact.id === id) || null;
+    return this.contacts().find((contact) => contact.id === id) || null;
   }
 
   getMaxId(): number {
     let maxId = 0;
-    for (let contact of this.contacts) {
+    for (let contact of this.contacts()) {
       const currentId = Number(contact.id);
       if (currentId > maxId) {
         maxId = currentId;
@@ -72,9 +70,7 @@ export class ContactsService {
     this.maxContactId++;
     newContact.id = this.maxContactId.toString();
 
-    this.contacts.push(newContact);
-    // const contactsListClone = this.contacts.slice();
-    // this.contactListChangedEvent.next(contactsListClone);
+    this.contacts.update(contacts => [...contacts, newContact]);
     this.storeContacts();
   }
 
@@ -83,16 +79,19 @@ export class ContactsService {
       return;
     }
 
-    const pos = this.contacts.indexOf(originalContact);
+    const contactsList = this.contacts();
+    const pos = contactsList.indexOf(originalContact);
     if (pos < 0) {
       return;
     }
 
     newContact.id = originalContact.id;
-    this.contacts[pos] = newContact;
+    this.contacts.update(contacts => {
+      const updated = [...contacts];
+      updated[pos] = newContact;
+      return updated;
+    });
 
-    // const contactsListClone = this.contacts.slice();
-    // this.contactListChangedEvent.next(contactsListClone);
     this.storeContacts();
   }
 
@@ -100,22 +99,26 @@ export class ContactsService {
     if (!contact) {
       return;
     }
-    const pos = this.contacts.indexOf(contact);
+    const contactsList = this.contacts();
+    const pos = contactsList.indexOf(contact);
     if (pos < 0) {
       return;
     }
-    this.contacts.splice(pos, 1);
-    // this.contactListChangedEvent.next(this.contacts.slice());
+    this.contacts.update(contacts => {
+      const updated = [...contacts];
+      updated.splice(pos, 1);
+      return updated;
+    });
     this.storeContacts();
   }
 
   storeContacts() {
-    const contactsJson = JSON.stringify(this.contacts);
+    const contactsJson = JSON.stringify(this.contacts());
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     // Send PUT request to Firebase to update the contacts list
     this.http.put(this.contactsUrl, contactsJson, { headers }).subscribe(() => {
-      this.contactListChangedEvent.next([...this.contacts]);
+      // Signal will automatically notify subscribers
     });
   }
 }

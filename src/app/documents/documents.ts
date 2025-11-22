@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, effect } from '@angular/core';
 
 import { Document } from '../documents/document.model';
 import { DocumentsService } from '../documents/documents.service';
@@ -10,21 +9,19 @@ import { DocumentsService } from '../documents/documents.service';
   templateUrl: './documents.html',
   styleUrl: './documents.css',
 })
-export class Documents implements OnInit, OnDestroy {
+export class Documents implements OnInit {
   selectedDocument!: Document;
-  private docChangeSub!: Subscription;
 
-  constructor(private documentsService: DocumentsService) {}
-
-  ngOnInit() {
-    this.docChangeSub = this.documentsService.documentListChangedEvent.subscribe(
-      (documentList: Document[]) => {
+  constructor(private documentsService: DocumentsService) {
+    effect(() => {
+      const documentList = this.documentsService.documentListChangedEvent();
+      if (documentList.length > 0) {
         this.selectedDocument = documentList[0];
       }
-    );
+    });
   }
 
-  ngOnDestroy() {
-    this.docChangeSub.unsubscribe();
+  ngOnInit() {
+    // Initial load happens in constructor effect
   }
 }
