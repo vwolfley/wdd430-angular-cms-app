@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 
 import { Contact } from '../contacts/contact.model';
 import { ContactsService } from './contacts.service';
@@ -12,13 +12,16 @@ import { ContactsService } from './contacts.service';
 export class Contacts implements OnInit {
   selectedContact!: Contact;
 
-  constructor(private contactsService: ContactsService) {}
+  constructor(private contactsService: ContactsService) {
+    effect(() => {
+      const contactList = this.contactsService.contactListChangedEvent();
+      if (contactList.length > 0) {
+        this.selectedContact = contactList[0];
+      }
+    });
+  }
 
   ngOnInit() {
-    this.contactsService.contactListChangedEvent.subscribe(
-      (ContactList: Contact[]) => {
-        this.selectedContact = ContactList[0];
-      }
-    );
+    // Initial load happens in constructor effect
   }
 }

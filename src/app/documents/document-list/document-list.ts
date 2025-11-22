@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, computed } from '@angular/core';
 
 import { Document } from '../document.model';
 import { DocumentsService } from '../documents.service';
@@ -10,24 +9,15 @@ import { DocumentsService } from '../documents.service';
   templateUrl: './document-list.html',
   styleUrl: './document-list.css',
 })
-export class DocumentList implements OnInit, OnDestroy {
-  documents: Document[] = [];
+export class DocumentList implements OnInit {
   documentId: string = '';
-  private docChangeSub!: Subscription;
 
   constructor(private documentsService: DocumentsService) {}
 
+  // Use computed to expose documents as a signal
+  documents = computed(() => this.documentsService.documentListChangedEvent());
+
   ngOnInit() {
     this.documentsService.getDocuments();
-    // Subscribe to document changes
-    this.docChangeSub = this.documentsService.documentListChangedEvent.subscribe(
-      (documents: Document[]) => {
-        this.documents = documents;
-      }
-    );
-  }
-
-  ngOnDestroy() {
-    this.docChangeSub.unsubscribe();
   }
 }

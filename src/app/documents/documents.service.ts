@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Subject } from 'rxjs';
 
 import { Document } from './document.model';
 // import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
@@ -9,8 +8,8 @@ import { Document } from './document.model';
   providedIn: 'root',
 })
 export class DocumentsService {
-  private documents: Document[] = [];
-  documentListChangedEvent = new Subject<Document[]>();
+  private documents = signal<Document[]>([]);
+  documentListChangedEvent = this.documents.asReadonly();
   maxDocumentId: number = 0;
 
   // Firebase endpoint URL
@@ -18,7 +17,7 @@ export class DocumentsService {
     'https://wdd430-angular-cms-project-default-rtdb.firebaseio.com/documents.json';
 
   constructor(private http: HttpClient) {
-    // this.documents = MOCKDOCUMENTS;
+    // this.documents.set(MOCKDOCUMENTS);
     this.maxDocumentId = this.getMaxId();
   }
 
@@ -30,16 +29,15 @@ export class DocumentsService {
     this.http.get<Document[]>(this.documentsUrl).subscribe({
       // SUCCESS method
       next: (documents: Document[]) => {
-        this.documents = documents;
         this.maxDocumentId = this.getMaxId();
 
         // Sort by name
-        this.documents.sort((a, b) => {
+        const sortedDocuments = documents.sort((a, b) => {
           if (a.name < b.name) return -1;
           if (a.name > b.name) return 1;
           return 0;
         });
-        this.documentListChangedEvent.next(this.documents.slice());
+        this.documents.set(sortedDocuments);
       },
       // ERROR method
       error: (error: any) => {
@@ -52,13 +50,13 @@ export class DocumentsService {
   }
 
   getDocument(id: string): Document | null {
-    return this.documents.find((document) => document.id === id) || null;
+    return this.documents().find((document) => document.id === id) || null;
   }
 
   getMaxId(): number {
     let maxId = 0;
 
-    for (const document of this.documents) {
+    for (const document of this.documents()) {
       const currentId = parseInt(document.id);
       if (currentId > maxId) {
         maxId = currentId;
@@ -76,10 +74,7 @@ export class DocumentsService {
     this.maxDocumentId++;
     newDocument.id = this.maxDocumentId.toString();
 
-    this.documents.push(newDocument);
-
-    // const documentsListClone = this.documents.slice();
-    // this.documentListChangedEvent.next(documentsListClone);
+    this.documents.update(documents => [...documents, newDocument]);
     this.storeDocuments();
   }
 
@@ -88,16 +83,19 @@ export class DocumentsService {
       return;
     }
 
-    const pos = this.documents.indexOf(originalDocument);
+    const documentsList = this.documents();
+    const pos = documentsList.indexOf(originalDocument);
     if (pos < 0) {
       return;
     }
 
     newDocument.id = originalDocument.id;
-    this.documents[pos] = newDocument;
+    this.documents.update(documents => {
+      const updated = [...documents];
+      updated[pos] = newDocument;
+      return updated;
+    });
 
-    // const documentsListClone = this.documents.slice();
-    // this.documentListChangedEvent.next(documentsListClone);
     this.storeDocuments();
   }
 
@@ -105,22 +103,26 @@ export class DocumentsService {
     if (!document) {
       return;
     }
-    const pos = this.documents.indexOf(document);
+    const documentsList = this.documents();
+    const pos = documentsList.indexOf(document);
     if (pos < 0) {
       return;
     }
-    this.documents.splice(pos, 1);
-    // this.documentListChangedEvent.next(this.documents.slice());
+    this.documents.update(documents => {
+      const updated = [...documents];
+      updated.splice(pos, 1);
+      return updated;
+    });
     this.storeDocuments();
   }
 
   storeDocuments() {
-    const documentsJson = JSON.stringify(this.documents);
+    const documentsJson = JSON.stringify(this.documents());
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     // Send PUT request to Firebase to update the documents list
     this.http.put(this.documentsUrl, documentsJson, { headers }).subscribe(() => {
-      this.documentListChangedEvent.next([...this.documents]);
+      // Signal will automatically notify subscribers
     });
   }
 }
