@@ -35,6 +35,7 @@ export class ContactsService {
           return 0;
         });
         this.contactListChangedEvent.next(this.contacts.slice());
+        console.log(this.contacts);
       },
       // ERROR method
       error: (error: any) => {

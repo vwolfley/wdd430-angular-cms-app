@@ -45,7 +45,7 @@ export class MessageService {
       },
       complete: () => {
         console.log('Message fetch complete');
-        // console.log(this.messages);
+        console.log(this.messages);
       },
     });
   }
