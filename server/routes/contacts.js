@@ -7,6 +7,7 @@ const Contact = require('../models/contact');
 // GET all contacts
 router.get('/', (req, res, next) => {
   Contact.find()
+    .populate('group')
     .then((contacts) => {
       res.status(200).json(contacts);
     })
