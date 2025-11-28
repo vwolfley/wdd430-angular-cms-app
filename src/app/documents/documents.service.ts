@@ -68,6 +68,7 @@ export class DocumentsService {
     return maxId;
   }
 
+  // Add a new document
   addDocument(newDocument: Document) {
     if (!newDocument) {
       return;
@@ -79,16 +80,16 @@ export class DocumentsService {
 
     // add to database
     this.http
-      .post<{ message: string; document: Document }>(this.documentsUrl, document, {
+      .post<{ message: string; document: Document }>(this.documentsUrl, newDocument, {
         headers: headers,
       })
       .subscribe((responseData) => {
         // add new document to documents
         this.documents.push(responseData.document);
-        // this.sortAndSend();
+        this.documentListChangedEvent.next(this.documents.slice());
       });
   }
-
+  // Update an existing document
   updateDocument(originalDocument: Document, newDocument: Document) {
     if (!originalDocument || !newDocument) {
       return;

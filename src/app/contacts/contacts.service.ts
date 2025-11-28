@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subject } from 'rxjs';
 
 import { Contact } from './contact.model';
-// import { MOCKCONTACTS } from './MOCKCONTACTS';
 
 @Injectable({
   providedIn: 'root',
@@ -14,18 +13,14 @@ export class ContactsService {
   maxContactId: number = 0;
 
   constructor(private http: HttpClient) {
-    // this.contacts = MOCKCONTACTS;
+    this.contacts = this.contacts;
     this.maxContactId = this.getMaxId();
   }
 
   // Firebase endpoint URL
-  private contactsUrl =
-    'https://wdd430-angular-cms-project-default-rtdb.firebaseio.com/contacts.json';
+  private contactsUrl = 'http://localhost:3000/contacts';
 
-  // getContacts(): Contact[] {
-  //   return this.contacts.slice();
-  // }
-
+  // Fetch contacts from the server
   getContacts() {
     this.http.get<Contact[]>(this.contactsUrl).subscribe({
       // SUCCESS method
@@ -66,18 +61,28 @@ export class ContactsService {
     return maxId;
   }
 
+  // Add a new contact
   addContact(newContact: Contact) {
     if (!newContact) return;
 
-    this.maxContactId++;
-    newContact.id = this.maxContactId.toString();
+    // make sure id of the new Contact is empty
+    newContact.id = '';
 
-    this.contacts.push(newContact);
-    // const contactsListClone = this.contacts.slice();
-    // this.contactListChangedEvent.next(contactsListClone);
-    this.storeContacts();
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // add to database
+    this.http
+      .post<{ message: string; contact: Contact }>(this.contactsUrl, newContact, {
+        headers: headers,
+      })
+      .subscribe((responseData) => {
+        // add new contact to contacts
+        this.contacts.push(responseData.contact);
+        this.contactListChangedEvent.next(this.contacts.slice());
+      });
   }
 
+  // Update an existing contact
   updateContact(originalContact: Contact, newContact: Contact) {
     if (!originalContact || !newContact) {
       return;
@@ -88,14 +93,23 @@ export class ContactsService {
       return;
     }
 
+    // set the id of the new Contact to the id of the old Contact
     newContact.id = originalContact.id;
-    this.contacts[pos] = newContact;
 
-    // const contactsListClone = this.contacts.slice();
-    // this.contactListChangedEvent.next(contactsListClone);
-    this.storeContacts();
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // update database
+    this.http
+      .put(`${this.contactsUrl}/` + originalContact.id, newContact, {
+        headers: headers,
+      })
+      .subscribe((response) => {
+        this.contacts[pos] = newContact;
+        this.contactListChangedEvent.next(this.contacts.slice());
+      });
   }
 
+  // Delete a contact
   deleteContact(contact: Contact) {
     if (!contact) {
       return;
@@ -104,18 +118,20 @@ export class ContactsService {
     if (pos < 0) {
       return;
     }
-    this.contacts.splice(pos, 1);
-    // this.contactListChangedEvent.next(this.contacts.slice());
-    this.storeContacts();
-  }
-
-  storeContacts() {
-    const contactsJson = JSON.stringify(this.contacts);
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
-    // Send PUT request to Firebase to update the contacts list
-    this.http.put(this.contactsUrl, contactsJson, { headers }).subscribe(() => {
-      this.contactListChangedEvent.next([...this.contacts]);
+    // delete from database
+    this.http.delete(`${this.contactsUrl}/` + contact.id).subscribe((response) => {
+      this.contacts.splice(pos, 1);
+      this.contactListChangedEvent.next(this.contacts.slice());
     });
   }
+
+  // storeContacts() {
+  //   const contactsJson = JSON.stringify(this.contacts);
+  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  //   // Send PUT request to Firebase to update the contacts list
+  //   this.http.put(this.contactsUrl, contactsJson, { headers }).subscribe(() => {
+  //     this.contactListChangedEvent.next([...this.contacts]);
+  //   });
+  // }
 }
