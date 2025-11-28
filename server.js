@@ -49,13 +49,15 @@ app.use('/documents', documentsRoutes);
 // ... ADD YOUR CODE TO MAP YOUR URL'S TO ROUTING FILES HERE ...
 
 // establish a connection to the mongo database
-mongoose.connect('mongodb://localhost:27017/cms', { useNewUrlParser: true }, (err, res) => {
-  if (err) {
+async function connectDB() {
+  try {
+    await mongoose.connect('mongodb://localhost:27017/wdd430-cms');
+    console.log('MongoDB connected');
+  } catch (err) {
     console.log('Connection failed: ' + err);
-  } else {
-    console.log('Connected to database!');
   }
-});
+}
+connectDB();
 
 // Tell express to map all other non-defined routes back to the index page
 app.use((req, res) => {
