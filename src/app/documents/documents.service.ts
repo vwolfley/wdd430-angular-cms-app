@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Subject, tap, Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { Document } from './document.model';
-// import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 
 @Injectable({
   providedIn: 'root',
@@ -14,8 +13,7 @@ export class DocumentsService {
   maxDocumentId: number = 0;
 
   // Firebase endpoint URL
-  private documentsUrl =
-    'https://wdd430-angular-cms-project-default-rtdb.firebaseio.com/documents.json';
+  private documentsUrl = 'http://localhost:3000/documents';
 
   constructor(private http: HttpClient) {
     // this.documents = MOCKDOCUMENTS;
@@ -74,15 +72,21 @@ export class DocumentsService {
     if (!newDocument) {
       return;
     }
+    // make sure id of the new Document is empty
+    newDocument.id = '';
 
-    this.maxDocumentId++;
-    newDocument.id = this.maxDocumentId.toString();
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    this.documents.push(newDocument);
-
-    // const documentsListClone = this.documents.slice();
-    // this.documentListChangedEvent.next(documentsListClone);
-    this.storeDocuments();
+    // add to database
+    this.http
+      .post<{ message: string; document: Document }>(this.documentsUrl, document, {
+        headers: headers,
+      })
+      .subscribe((responseData) => {
+        // add new document to documents
+        this.documents.push(responseData.document);
+        // this.sortAndSend();
+      });
   }
 
   updateDocument(originalDocument: Document, newDocument: Document) {
@@ -90,30 +94,42 @@ export class DocumentsService {
       return;
     }
 
-    const pos = this.documents.indexOf(originalDocument);
+    const pos = this.documents.findIndex((d) => d.id === originalDocument.id);
     if (pos < 0) {
       return;
     }
 
+    // set the id of the new Document to the id of the old Document
     newDocument.id = originalDocument.id;
-    this.documents[pos] = newDocument;
+    // newDocument._id = originalDocument._id;
 
-    // const documentsListClone = this.documents.slice();
-    // this.documentListChangedEvent.next(documentsListClone);
-    this.storeDocuments();
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // update database
+    this.http
+      .put(`${this.documentsUrl}/` + originalDocument.id, newDocument, {
+        headers: headers,
+      })
+      .subscribe((response) => {
+        this.documents[pos] = newDocument;
+        // this.sortAndSend();
+      });
   }
 
   deleteDocument(document: Document) {
     if (!document) {
       return;
     }
-    const pos = this.documents.indexOf(document);
+    const pos = this.documents.findIndex((d) => d.id === document.id);
     if (pos < 0) {
       return;
     }
-    this.documents.splice(pos, 1);
-    // this.documentListChangedEvent.next(this.documents.slice());
-    this.storeDocuments();
+
+    // delete from database
+    this.http.delete(`${this.documentsUrl}/` + document.id).subscribe((response) => {
+      this.documents.splice(pos, 1);
+      // this.sortAndSend();
+    });
   }
 
   storeDocuments() {
