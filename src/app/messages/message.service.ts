@@ -74,13 +74,13 @@ export class MessageService {
       });
   }
 
-  storeMessages() {
-    const messagesJson = JSON.stringify(this.messages);
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  // storeMessages() {
+  //   const messagesJson = JSON.stringify(this.messages);
+  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    // Send PUT request to Firebase to update the messages list
-    this.http.put(this.messagesUrl, messagesJson, { headers }).subscribe(() => {
-      this.messageChangedEvent.next([...this.messages]);
-    });
-  }
+  //   // Send PUT request to Firebase to update the messages list
+  //   this.http.put(this.messagesUrl, messagesJson, { headers }).subscribe(() => {
+  //     this.messageChangedEvent.next([...this.messages]);
+  //   });
+  // }
 }

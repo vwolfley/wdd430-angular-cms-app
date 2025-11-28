@@ -12,20 +12,15 @@ export class DocumentsService {
   documentListChangedEvent = new Subject<Document[]>();
   maxDocumentId: number = 0;
 
+  constructor(private http: HttpClient) {
+    this.documents = this.documents;
+    this.maxDocumentId = this.getMaxId();
+  }
+
   // Firebase endpoint URL
   private documentsUrl = 'http://localhost:3000/documents';
 
-  constructor(private http: HttpClient) {
-    // this.documents = MOCKDOCUMENTS;
-    // this.maxDocumentId = this.getMaxId();
-    this.documents = this.documents;
-    // this.getDocuments();
-  }
-
-  // getDocuments(): Document[] {
-  //   return this.documents.slice();
-  // }
-
+  // Fetch documents from the server
   getDocuments() {
     this.http.get<Document[]>(this.documentsUrl).subscribe({
       // SUCCESS method
@@ -102,7 +97,6 @@ export class DocumentsService {
 
     // set the id of the new Document to the id of the old Document
     newDocument.id = originalDocument.id;
-    // newDocument._id = originalDocument._id;
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -113,10 +107,11 @@ export class DocumentsService {
       })
       .subscribe((response) => {
         this.documents[pos] = newDocument;
-        // this.sortAndSend();
+        this.documentListChangedEvent.next(this.documents.slice());
       });
   }
 
+  // Delete a document
   deleteDocument(document: Document) {
     if (!document) {
       return;
@@ -125,21 +120,20 @@ export class DocumentsService {
     if (pos < 0) {
       return;
     }
-
     // delete from database
     this.http.delete(`${this.documentsUrl}/` + document.id).subscribe((response) => {
       this.documents.splice(pos, 1);
-      // this.sortAndSend();
+      this.documentListChangedEvent.next(this.documents.slice());
     });
   }
 
-  storeDocuments() {
-    const documentsJson = JSON.stringify(this.documents);
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  // storeDocuments() {
+  //   const documentsJson = JSON.stringify(this.documents);
+  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    // Send PUT request to Firebase to update the documents list
-    this.http.put(this.documentsUrl, documentsJson, { headers }).subscribe(() => {
-      this.documentListChangedEvent.next([...this.documents]);
-    });
-  }
+  //   // Send PUT request to Firebase to update the documents list
+  //   this.http.put(this.documentsUrl, documentsJson, { headers }).subscribe(() => {
+  //     this.documentListChangedEvent.next([...this.documents]);
+  //   });
+  // }
 }
