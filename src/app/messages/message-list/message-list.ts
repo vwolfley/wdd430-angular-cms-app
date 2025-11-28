@@ -20,9 +20,11 @@ export class MessageList implements OnInit, OnDestroy {
     // Get the initial list of messages
     this.messageService.getMessages();
     // Subscribe to message changes
-    this.messageChangeSub = this.messageService.messageChangedEvent.subscribe((messages: Message[]) => {
-      this.messages = messages;
-    });
+    this.messageChangeSub = this.messageService.messageChangedEvent.subscribe(
+      (messages: Message[]) => {
+        this.messages = messages;
+      }
+    );
   }
 
   ngOnDestroy() {

@@ -35,6 +35,7 @@ export class DocumentsService {
           return 0;
         });
         this.documentListChangedEvent.next(this.documents.slice());
+        console.log(this.documents);
       },
       // ERROR method
       error: (error: any) => {

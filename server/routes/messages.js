@@ -7,7 +7,7 @@ const Message = require('../models/message');
 // GET all messages
 router.get('/', async (req, res) => {
   try {
-    const messages = await Message.find();
+    const messages = await Message.find().populate('sender');
     res.status(200).json(messages);
   } catch (err) {
     res.status(500).json({

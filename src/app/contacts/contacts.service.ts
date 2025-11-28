@@ -13,7 +13,7 @@ export class ContactsService {
   maxContactId: number = 0;
 
   constructor(private http: HttpClient) {
-    this.contacts = this.contacts;
+    this.getContacts();
     this.maxContactId = this.getMaxId();
   }
 
@@ -42,6 +42,7 @@ export class ContactsService {
       },
       complete: () => {
         console.log('Contact fetch complete');
+        console.log(this.contacts);
       },
     });
   }
