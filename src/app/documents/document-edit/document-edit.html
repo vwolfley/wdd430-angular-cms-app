@@ -28,7 +28,8 @@
             size="120"
             max="255"
             name="description"
-            ngModel
+            [(ngModel)]="document!.description"
+            #description="ngModel"
           />
         </div>
       </div>

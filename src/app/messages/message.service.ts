@@ -70,6 +70,7 @@ export class MessageService {
         headers: headers,
       })
       .subscribe((responseData) => {
+        console.log(responseData);
         this.messages.push(responseData.messageData);
         this.messageChangedEvent.next(this.messages.slice());
       });

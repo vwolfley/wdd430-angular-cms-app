@@ -12,9 +12,9 @@ const contactSchema = mongoose.Schema(
   {
     toJSON: {
       versionKey: false, // removes __v
-      transform: function (doc, ret) {
-        delete ret._id; // removes _id
-      },
+      // transform: function (doc, ret) {
+      //   delete ret._id; // removes _id
+      // },
     },
   }
 );
