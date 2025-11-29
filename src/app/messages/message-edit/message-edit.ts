@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 
-import { v4 as uuidv4 } from 'uuid';
 import { Message } from '../message.model';
 import { MessageService } from '../message.service';
+import { ContactsService } from '../../contacts/contacts.service';
 
 @Component({
   selector: 'cms-message-edit',
@@ -16,18 +16,27 @@ export class MessageEdit {
 
   @Output() addMessageEvent = new EventEmitter<Message>();
 
-  currentSender: string = 'Vern Wolfley';
+  currentSender: string = '66';
 
-  constructor(private messageService: MessageService) {}
+  constructor(private messageService: MessageService, private contactsService: ContactsService) {}
 
   onSendMessage() {
     const subject = this.subjectInput.nativeElement.value;
     const msgText = this.msgTextInput.nativeElement.value;
+
+    // console.log(this.contactsService.getContact());
+
+    const currentUser = this.contactsService.getContact('66'); // your custom id
+    // console.log(currentUser);
+    if (currentUser && currentUser._id) {
+      this.currentSender = currentUser._id; // <-- Contact id
+    }
     // Create a new Message object
-    const newId = uuidv4();
-    const newMessage = new Message(newId, subject, msgText, this.currentSender);
+    const newMessage = new Message('1', subject, msgText, this.currentSender);
+    // console.log(newMessage);
 
     this.messageService.addMessage(newMessage);
+    this.onClear();
   }
 
   onClear() {

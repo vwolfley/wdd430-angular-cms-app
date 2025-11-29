@@ -1,7 +1,7 @@
 {
   "name": "cms",
-  "version": "0.0.0",
-  "date": "2025-09-16",
+  "version": "0.11.0",
+  "date": "2025-11-29",
   "created": "2025-09-16",
   "copyright": "2025",
   "description": "CMS application for WDD 430 - Fall 2025 -BYUI",
@@ -14,9 +14,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",
+    "start:server": "nodemon server.js",
+    "start:all": "concurrently \"ng serve --open\" \"nodemon server.js\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "start:mongo": "mongod --dbpath ./data/db"
   },
   "dependencies": {
     "@angular/cdk": "^20.2.12",
@@ -31,6 +34,8 @@
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "jquery": "^3.7.1",
+    "mongoose": "^7.8.7",
+    "mongoose-unique-validator": "^4.0.1",
     "morgan": "^1.10.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -42,13 +47,15 @@
     "@angular/compiler-cli": "^20.3.0",
     "@types/jasmine": "~5.1.0",
     "baseline-browser-mapping": "^2.8.30",
+    "concurrently": "^9.2.1",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "nodemon": "^3.1.11"
   },
   "prettier": {
     "printWidth": 100,
